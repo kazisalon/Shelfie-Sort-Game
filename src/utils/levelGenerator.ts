@@ -13,7 +13,10 @@ import { GAME_CONFIG, ITEM_TYPES, ITEM_CONFIGS } from '../constants/game.constan
 export const calculateShelvesForLevel = (level: number): number => {
     const baselineShelves = GAME_CONFIG.BASE_SHELVES_COUNT;
     const additionalShelves = Math.floor((level - 1) / 3) * GAME_CONFIG.SHELVES_INCREASE_RATE;
-    return baselineShelves + additionalShelves;
+    const totalShelves = baselineShelves + additionalShelves;
+
+    // Cap at 6 shelves to keep everything visible on screen
+    return Math.min(totalShelves, 6);
 };
 
 /**
@@ -48,10 +51,10 @@ const generateItemPool = (level: number, shelfCount: number): GameItem[] => {
     const totalItemsToSpawn = calculateItemsToSpawn(shelfCount);
     const numberOfSets = totalItemsToSpawn / GAME_CONFIG.MATCH_COUNT;
 
-    // Determine how many different item types to use based on level
+    // IMPROVED: More aggressive item type scaling
     const itemTypesCount = Math.min(
-        Math.max(2, Math.floor(level / 2) + 1), // Start with 2 types, add more as level increases
-        ITEM_TYPES.length // Cap at total available types
+        Math.max(2, Math.floor(level * 0.6) + 1), // Increases faster: level 1=2, level 5=4, level 10=7, level 13+=8
+        ITEM_TYPES.length
     );
 
     const availableTypes = ITEM_TYPES.slice(0, itemTypesCount);

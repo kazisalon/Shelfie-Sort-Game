@@ -75,30 +75,36 @@ const styles = StyleSheet.create({
         marginBottom: LAYOUT.SHELF_GAP,
     },
     shelf: {
-        backgroundColor: '#8B4513',
-        borderRadius: 12,
-        padding: 10,
+        backgroundColor: '#A0522D', // Lighter wood color
+        borderRadius: 16,
+        padding: 12,
         minHeight: LAYOUT.SHELF_HEIGHT,
         justifyContent: 'center',
-        // Shadow for depth
+        // Premium 3D shadow
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 5,
-        elevation: 8,
+        shadowOffset: { width: 0, height: 6 },
+        shadowOpacity: 0.45,
+        shadowRadius: 10,
+        elevation: 12,
+        // Border for 3D depth
+        borderWidth: 3,
+        borderColor: '#8B4513',
+        borderBottomWidth: 5,
+        borderBottomColor: '#654321',
     },
     itemsContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: LAYOUT.ITEM_GAP,
+        gap: LAYOUT.ITEM_GAP + 2,
     },
     emptySlot: {
         width: LAYOUT.ITEM_SIZE,
         height: LAYOUT.ITEM_SIZE,
-        borderRadius: 8,
+        borderRadius: 12,
         borderWidth: 2,
-        borderColor: 'rgba(255, 255, 255, 0.2)',
+        borderColor: 'rgba(139, 69, 19, 0.5)',
         borderStyle: 'dashed',
+        backgroundColor: 'rgba(101, 67, 33, 0.25)',
     },
 });
 

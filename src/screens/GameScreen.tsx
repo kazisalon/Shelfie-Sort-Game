@@ -6,14 +6,16 @@ import {
     Dimensions,
     TouchableOpacity,
     Alert,
+    ScrollView,
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Shelf, GameItem } from '../types/game.types';
 import { useUserStore } from '../store/gameStore';
 import { generateLevel, checkWinCondition, checkShelfForMatch } from '../utils/levelGenerator';
-import { GAME_CONFIG, LAYOUT, ANIMATION_DURATION } from '../constants/game.constants';
+import { GAME_CONFIG, LAYOUT, ANIMATION_DURATION, LEVEL_THEMES } from '../constants/game.constants';
 import ShelfComponent from '../components/ShelfComponent';
 import GameItemComponent from '../components/GameItemComponent';
+import soundManager from '../utils/soundManager';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -29,6 +31,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ onNavigateToShop }) => {
     const [draggedItem, setDraggedItem] = useState<{ shelfIndex: number; itemIndex: number } | null>(null);
 
     const shelfLayoutsRef = useRef<{ y: number; height: number }[]>([]);
+    const scrollOffsetRef = useRef(0); // Track scroll position for accurate drop detection
 
     /**
      * Initialize Level
@@ -111,6 +114,9 @@ const GameScreen: React.FC<GameScreenProps> = ({ onNavigateToShop }) => {
                 // 2. Add to target
                 toShelf.items.push(itemToMove);
 
+                // 🎵 Play satisfying drop sound
+                soundManager.playSound('drop');
+
                 console.log('=== DROP SUCCESS ===');
                 return newShelves;
             });
@@ -136,6 +142,9 @@ const GameScreen: React.FC<GameScreenProps> = ({ onNavigateToShop }) => {
                 if (checkShelfForMatch(shelf)) {
                     matchCount++;
 
+                    // 🎵 Play match sound immediately
+                    soundManager.playSound('match');
+
                     // Trigger haptic feedback
                     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 
@@ -156,7 +165,10 @@ const GameScreen: React.FC<GameScreenProps> = ({ onNavigateToShop }) => {
 
         // Award coins and increment matches AFTER state update
         if (matchCount > 0) {
-            addCoins(GAME_CONFIG.COINS_PER_MATCH * matchCount);
+            const coinsToAward = GAME_CONFIG.COINS_PER_MATCH * matchCount;
+            console.log(`💰 AWARDING ${coinsToAward} COINS (${matchCount} matches)`);
+
+            addCoins(coinsToAward);
             incrementMatches();
         }
     }, [addCoins, incrementMatches]);
@@ -166,6 +178,9 @@ const GameScreen: React.FC<GameScreenProps> = ({ onNavigateToShop }) => {
      */
     const handleLevelComplete = () => {
         setIsGameWon(true);
+
+        // 🎵 Victory sound + haptic
+        soundManager.playSound('win');
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 
         Alert.alert(
@@ -192,17 +207,21 @@ const GameScreen: React.FC<GameScreenProps> = ({ onNavigateToShop }) => {
 
     /**
      * Determine which shelf the item is being dropped on
-     * Uses nearest-shelf logic for better UX
+     * FIXED: Accounts for scroll position for accurate drops
      */
     const getTargetShelfIndex = (absoluteY: number): number => {
         if (shelfLayoutsRef.current.length === 0) {
-            return 0; // Default to first shelf if no layouts yet
+            return 0;
         }
+
+        // CRITICAL: Adjust for scroll offset!
+        // absoluteY is screen-relative, but layouts are content-relative
+        const adjustedY = absoluteY + scrollOffsetRef.current;
 
         // First try exact hit-testing
         for (let i = 0; i < shelfLayoutsRef.current.length; i++) {
             const layout = shelfLayoutsRef.current[i];
-            if (layout && absoluteY >= layout.y && absoluteY <= layout.y + layout.height) {
+            if (layout && adjustedY >= layout.y && adjustedY <= layout.y + layout.height) {
                 return i;
             }
         }
@@ -215,7 +234,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ onNavigateToShop }) => {
             const layout = shelfLayoutsRef.current[i];
             if (layout) {
                 const centerY = layout.y + layout.height / 2;
-                const distance = Math.abs(absoluteY - centerY);
+                const distance = Math.abs(adjustedY - centerY);
                 if (distance < smallestDistance) {
                     smallestDistance = distance;
                     nearestIndex = i;
@@ -226,20 +245,67 @@ const GameScreen: React.FC<GameScreenProps> = ({ onNavigateToShop }) => {
         return nearestIndex;
     };
 
+    // 🎨 DYNAMIC THEME - Changes every 5 levels!
+    const themeIndex = Math.min(Math.floor((progress.currentLevel - 1) / 5), LEVEL_THEMES.length - 1);
+    const currentTheme = LEVEL_THEMES[themeIndex];
+
     return (
-        <View style={styles.container}>
-            {/* Header */}
-            <View style={styles.header}>
-                <View style={styles.headerRow}>
-                    <Text style={styles.levelText}>Level {progress.currentLevel}</Text>
-                    <TouchableOpacity onPress={onNavigateToShop} style={styles.coinButton}>
-                        <Text style={styles.coinText}>💰 {progress.coins}</Text>
+        <View style={[styles.container, { backgroundColor: currentTheme.background }]}>
+            {/* PREMIUM HEADER */}
+            <View style={[styles.header, { backgroundColor: currentTheme.header }]}>
+                {/* Glow overlay */}
+                <View style={styles.headerGlow} />
+
+                <View style={styles.headerContent}>
+                    {/* Left side - Level info */}
+                    <View style={styles.levelContainer}>
+                        <Text style={styles.levelLabel}>LEVEL</Text>
+                        <View style={styles.levelBadge}>
+                            <Text style={styles.levelNumber}>{progress.currentLevel}</Text>
+                        </View>
+                        <Text style={styles.themeName}>{currentTheme.name}</Text>
+                    </View>
+
+                    {/* Right side - Coins */}
+                    <TouchableOpacity
+                        onPress={onNavigateToShop}
+                        style={styles.coinContainer}
+                        activeOpacity={0.8}
+                    >
+                        <View style={styles.coinGlow} />
+                        <Text style={styles.coinIcon}>💰</Text>
+                        <Text style={styles.coinAmount}>{progress.coins}</Text>
+                        <View style={styles.coinShine} />
                     </TouchableOpacity>
+                </View>
+
+                {/* Progress bar */}
+                <View style={styles.progressBarContainer}>
+                    <View style={styles.progressBarBg}>
+                        <View
+                            style={[
+                                styles.progressBarFill,
+                                { width: `${(progress.totalMatches % 10) * 10}%` }
+                            ]}
+                        />
+                    </View>
+                    <Text style={styles.progressText}>
+                        {progress.totalMatches % 10}/10 matches to bonus
+                    </Text>
                 </View>
             </View>
 
-            {/* Game Board */}
-            <View style={styles.gameBoard}>
+            {/* Game Board - Scrollable */}
+            <ScrollView
+                style={styles.scrollView}
+                contentContainerStyle={styles.gameBoard}
+                showsVerticalScrollIndicator={false}
+                bounces={true}
+                scrollEventThrottle={16}
+                onScroll={(event) => {
+                    scrollOffsetRef.current = event.nativeEvent.contentOffset.y;
+                }}
+            >
                 {shelves.map((shelf, shelfIndex) => (
                     <ShelfComponent
                         key={`shelf-${shelfIndex}`}
@@ -250,14 +316,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ onNavigateToShop }) => {
                         getTargetShelfIndex={getTargetShelfIndex}
                     />
                 ))}
-            </View>
-
-            {/* Debug Info */}
-            <View style={styles.debugInfo}>
-                <Text style={styles.debugText}>
-                    Total Matches: {progress.totalMatches}
-                </Text>
-            </View>
+            </ScrollView>
         </View>
     );
 };
@@ -268,38 +327,147 @@ const styles = StyleSheet.create({
         backgroundColor: '#1A1A2E',
     },
     header: {
-        paddingTop: 60,
-        paddingHorizontal: 20,
-        paddingBottom: 20,
+        paddingTop: 40,
+        paddingHorizontal: 16,
+        paddingBottom: 10,
         backgroundColor: '#16213E',
-        borderBottomLeftRadius: 30,
-        borderBottomRightRadius: 30,
+        borderBottomLeftRadius: 20,
+        borderBottomRightRadius: 20,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 3 },
+        shadowOpacity: 0.25,
+        shadowRadius: 6,
+        elevation: 6,
     },
-    headerRow: {
+    headerGlow: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        height: 80,
+        backgroundColor: 'rgba(255, 215, 0, 0.1)',
+        borderBottomLeftRadius: 25,
+        borderBottomRightRadius: 25,
+    },
+    headerContent: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
+        marginBottom: 8,
     },
-    levelText: {
-        fontSize: 28,
-        fontWeight: 'bold',
+    levelContainer: {
+        alignItems: 'flex-start',
+    },
+    levelLabel: {
+        fontSize: 10,
+        fontWeight: '600',
+        color: '#FFD700',
+        letterSpacing: 0.5,
+        marginBottom: 3,
+    },
+    levelBadge: {
+        backgroundColor: 'rgba(255, 215, 0, 0.2)',
+        paddingHorizontal: 12,
+        paddingVertical: 4,
+        borderRadius: 16,
+        borderWidth: 2,
+        borderColor: '#FFD700',
+        shadowColor: '#FFD700',
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.4,
+        shadowRadius: 6,
+        elevation: 3,
+    },
+    levelNumber: {
+        fontSize: 22,
+        fontWeight: '900',
         color: '#FFFFFF',
+        textShadowColor: 'rgba(255, 215, 0, 0.5)',
+        textShadowOffset: { width: 0, height: 1 },
+        textShadowRadius: 3,
     },
-    coinButton: {
+    themeName: {
+        fontSize: 9,
+        color: 'rgba(255, 255, 255, 0.5)',
+        marginTop: 1,
+        fontStyle: 'italic',
+    },
+    coinContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
         backgroundColor: '#FFD700',
-        paddingHorizontal: 20,
-        paddingVertical: 10,
+        paddingHorizontal: 12,
+        paddingVertical: 6,
         borderRadius: 20,
+        shadowColor: '#FFD700',
+        shadowOffset: { width: 0, height: 3 },
+        shadowOpacity: 0.3,
+        shadowRadius: 6,
+        elevation: 4,
+        borderWidth: 2,
+        borderColor: '#FFA500',
     },
-    coinText: {
-        fontSize: 18,
-        fontWeight: 'bold',
+    coinGlow: {
+        position: 'absolute',
+        top: -4,
+        left: -4,
+        right: -4,
+        bottom: -4,
+        backgroundColor: 'rgba(255, 215, 0, 0.3)',
+        borderRadius: 28,
+    },
+    coinIcon: {
+        fontSize: 24,
+        marginRight: 6,
+    },
+    coinAmount: {
+        fontSize: 22,
+        fontWeight: '900',
         color: '#1A1A2E',
+        textShadowColor: 'rgba(255, 255, 255, 0.5)',
+        textShadowOffset: { width: 0, height: 1 },
+        textShadowRadius: 2,
+    },
+    coinShine: {
+        position: 'absolute',
+        top: 4,
+        right: 8,
+        width: 20,
+        height: 20,
+        backgroundColor: 'rgba(255, 255, 255, 0.4)',
+        borderRadius: 10,
+    },
+    progressBarContainer: {
+        marginTop: 6,
+    },
+    progressBarBg: {
+        height: 4,
+        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+        borderRadius: 2,
+        overflow: 'hidden',
+    },
+    progressBarFill: {
+        height: '100%',
+        backgroundColor: '#FFD700',
+        borderRadius: 2,
+        shadowColor: '#FFD700',
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.6,
+        shadowRadius: 3,
+    },
+    progressText: {
+        fontSize: 8,
+        color: 'rgba(255, 255, 255, 0.6)',
+        textAlign: 'center',
+        marginTop: 3,
+        fontWeight: '600',
+    },
+    scrollView: {
+        flex: 1,
     },
     gameBoard: {
-        flex: 1,
         padding: LAYOUT.CONTAINER_PADDING,
-        justifyContent: 'center',
+        paddingBottom: 40,
     },
     debugInfo: {
         padding: 10,

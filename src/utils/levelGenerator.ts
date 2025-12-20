@@ -29,16 +29,28 @@ const generateItemId = (): string => {
 /**
  * Apply the Buffer Rule to determine how many items to spawn
  * 
- * Formula: ItemsToSpawn = (TotalSlots - 3) / 3 sets
- * This ensures we always have at least 1 shelf (3 slots) free for moves
+ * PROGRESSIVE DIFFICULTY: Buffer reduces as levels increase!
+ * - Early levels: 3 empty slots (easy, plenty of room)
+ * - Mid levels: 2 empty slots (getting tight)
+ * - High levels: 1 empty slot (very challenging!)
  */
-export const calculateItemsToSpawn = (shelfCount: number): number => {
+export const calculateItemsToSpawn = (shelfCount: number, level: number): number => {
     const totalSlots = shelfCount * GAME_CONFIG.ITEMS_PER_SHELF;
-    const bufferSlots = GAME_CONFIG.BUFFER_SHELVES * GAME_CONFIG.ITEMS_PER_SHELF;
+
+    // PROGRESSIVE BUFFER: Reduces as you level up!
+    let bufferSlots: number;
+    if (level <= 3) {
+        bufferSlots = 3; // 3 empty slots (easy)
+    } else if (level <= 7) {
+        bufferSlots = 2; // 2 empty slots (medium)
+    } else {
+        bufferSlots = 1; // 1 empty slot (hard!)
+    }
+
     const availableSlots = totalSlots - bufferSlots;
 
     // Each "set" is 3 identical items
-    const numberOfSets = Math.floor(availableSlots / GAME_CONFIG.ITEMS_PER_SHELF);
+    const numberOfSets = Math.floor(availableSlots / GAME_CONFIG.MATCH_COUNT);
 
     return numberOfSets * GAME_CONFIG.MATCH_COUNT;
 };
@@ -48,7 +60,7 @@ export const calculateItemsToSpawn = (shelfCount: number): number => {
  * Items are created in sets of 3 (to ensure they can be matched)
  */
 const generateItemPool = (level: number, shelfCount: number): GameItem[] => {
-    const totalItemsToSpawn = calculateItemsToSpawn(shelfCount);
+    const totalItemsToSpawn = calculateItemsToSpawn(shelfCount, level);
     const numberOfSets = totalItemsToSpawn / GAME_CONFIG.MATCH_COUNT;
 
     // IMPROVED: More aggressive item type scaling

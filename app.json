@@ -1,41 +1,40 @@
 {
   "expo": {
-    "name": "Shelfie Sort: Goods Match 3D",
-    "slug": "Shelfie-Sort-Game",
+    "name": "Shelfie Sort: Match & Organize",
+    "slug": "shelfie-sort-game",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
     "newArchEnabled": true,
+    "description": "Addictive match-3 puzzle game! Organize items on shelves, match 3 identical items to clear space. Progressive difficulty, beautiful themes, and endless fun!",
     "splash": {
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#1A1A2E"
+      "backgroundColor": "#2A1A4E",
+      "resizeMode": "contain"
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.yourcompany.shelfiesort"
+      "bundleIdentifier": "com.shelfiesort.game",
+      "buildNumber": "1.0.0"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#1A1A2E"
+        "backgroundColor": "#2A1A4E"
       },
-      "package": "com.yourcompany.shelfiesort",
+      "package": "com.shelfiesort.game",
+      "versionCode": 1,
+      "permissions": [],
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": [
-      [
-        "react-native-google-mobile-ads",
-        {
-          "androidAppId": "ca-app-pub-3940256099942544~3347511713",
-          "iosAppId": "ca-app-pub-3940256099942544~1458002511"
-        }
-      ]
-    ]
+    "extra": {
+      "privacyPolicyUrl": "https://yourwebsite.com/privacy",
+      "supportEmail": "support@shelfiesort.com"
+    },
+    "plugins": []
   }
 }

@@ -139,6 +139,11 @@ const GameItemComponent: React.FC<GameItemComponentProps> = ({
             style={[styles.itemContainer, animatedStyle]}
         >
             <View style={[styles.item, { backgroundColor: item.color }]}>
+                {/* Top shine for glossy effect */}
+                <View style={styles.itemShineTop} />
+                {/* Inner shadow for depth */}
+                <View style={styles.itemInnerShadow} />
+                {/* Emoji on top */}
                 <Text style={styles.itemEmoji}>{itemConfig.label}</Text>
             </View>
             {isDragging && (
@@ -158,20 +163,48 @@ const styles = StyleSheet.create({
     item: {
         width: '100%',
         height: '100%',
-        borderRadius: 12,
+        borderRadius: 14,
         justifyContent: 'center',
         alignItems: 'center',
+        overflow: 'hidden', // IMPORTANT for shine effects
+        // Premium shadow
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 6 },
-        shadowOpacity: 0.35,
-        shadowRadius: 6,
-        elevation: 10,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.4,
+        shadowRadius: 8,
+        elevation: 12,
+        // 3D border effect
+        borderWidth: 2.5,
+        borderColor: 'rgba(255, 255, 255, 0.5)',
+        borderBottomWidth: 4,
+        borderBottomColor: 'rgba(0, 0, 0, 0.25)',
+    },
+    itemShineTop: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        height: '45%',
+        backgroundColor: 'rgba(255, 255, 255, 0.35)',
+        borderTopLeftRadius: 12,
+        borderTopRightRadius: 12,
+    },
+    itemInnerShadow: {
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        height: '20%',
+        backgroundColor: 'rgba(0, 0, 0, 0.15)',
+        borderBottomLeftRadius: 12,
+        borderBottomRightRadius: 12,
     },
     itemEmoji: {
-        fontSize: 32,
-        textShadowColor: 'rgba(0, 0, 0, 0.1)',
-        textShadowOffset: { width: 1, height: 1 },
-        textShadowRadius: 2,
+        fontSize: 34,
+        zIndex: 10,
+        textShadowColor: 'rgba(0, 0, 0, 0.3)',
+        textShadowOffset: { width: 1, height: 2 },
+        textShadowRadius: 4,
     },
     dragIndicator: {
         position: 'absolute',

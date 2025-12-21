@@ -11,6 +11,8 @@ const STORAGE_KEYS = {
     UNLOCKED_DECORATIONS: 'unlocked_decorations',
     GAMES_PLAYED: 'games_played',
     TOTAL_MATCHES: 'total_matches',
+    HAS_COMPLETED_ONBOARDING: 'has_completed_onboarding',
+    PLAYER_NAME: 'player_name',
 } as const;
 
 /**
@@ -58,11 +60,30 @@ const removeItem = async (key: string): Promise<void> => {
     }
 };
 
+const getBoolean = async (key: string, defaultValue: boolean = false): Promise<boolean> => {
+    try {
+        const value = await AsyncStorage.getItem(key);
+        return value === 'true';
+    } catch {
+        return defaultValue;
+    }
+};
+
+const setBoolean = async (key: string, value: boolean): Promise<void> => {
+    try {
+        await AsyncStorage.setItem(key, value ? 'true' : 'false');
+    } catch (error) {
+        console.error('Error saving to AsyncStorage:', error);
+    }
+};
+
 /**
  * User Progress Store
  */
 interface UserStore {
     progress: UserProgress;
+    playerName: string;
+    hasCompletedOnboarding: boolean;
     addCoins: (amount: number) => void;
     spendCoins: (amount: number) => boolean;
     unlockDecoration: (decorationId: string) => void;
@@ -70,6 +91,8 @@ interface UserStore {
     incrementMatches: () => void;
     loadProgress: () => Promise<void>;
     resetProgress: () => Promise<void>;
+    setPlayerName: (name: string) => void;
+    completeOnboarding: () => void;
 }
 
 export const useUserStore = create<UserStore>((set, get) => ({
@@ -80,6 +103,8 @@ export const useUserStore = create<UserStore>((set, get) => ({
         gamesPlayed: 0,
         totalMatches: 0,
     },
+    playerName: 'Player',
+    hasCompletedOnboarding: false,
 
     loadProgress: async () => {
         const coins = await getNumber(STORAGE_KEYS.USER_COINS, 0);
@@ -88,6 +113,8 @@ export const useUserStore = create<UserStore>((set, get) => ({
         const unlockedDecorations = JSON.parse(unlockedDecorationsStr);
         const gamesPlayed = await getNumber(STORAGE_KEYS.GAMES_PLAYED, 0);
         const totalMatches = await getNumber(STORAGE_KEYS.TOTAL_MATCHES, 0);
+        const playerName = await getString(STORAGE_KEYS.PLAYER_NAME, 'Player');
+        const hasCompletedOnboarding = await getBoolean(STORAGE_KEYS.HAS_COMPLETED_ONBOARDING, false);
 
         set({
             progress: {
@@ -97,6 +124,8 @@ export const useUserStore = create<UserStore>((set, get) => ({
                 gamesPlayed,
                 totalMatches,
             },
+            playerName,
+            hasCompletedOnboarding,
         });
     },
 
@@ -169,6 +198,16 @@ export const useUserStore = create<UserStore>((set, get) => ({
                 totalMatches: 0,
             },
         });
+    },
+
+    setPlayerName: (name: string) => {
+        setString(STORAGE_KEYS.PLAYER_NAME, name);
+        set({ playerName: name });
+    },
+
+    completeOnboarding: () => {
+        setBoolean(STORAGE_KEYS.HAS_COMPLETED_ONBOARDING, true);
+        set({ hasCompletedOnboarding: true });
     },
 }));
 

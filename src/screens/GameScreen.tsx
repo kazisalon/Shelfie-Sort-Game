@@ -16,6 +16,8 @@ import { GAME_CONFIG, LAYOUT, ANIMATION_DURATION, LEVEL_THEMES } from '../consta
 import ShelfComponent from '../components/ShelfComponent';
 import GameItemComponent from '../components/GameItemComponent';
 import soundManager from '../utils/soundManager';
+import SettingsScreen from './SettingsScreen';
+import LevelCompleteModal from '../components/LevelCompleteModal';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -24,11 +26,12 @@ interface GameScreenProps {
 }
 
 const GameScreen: React.FC<GameScreenProps> = ({ onNavigateToShop }) => {
-    const { progress, addCoins, incrementLevel, incrementMatches } = useUserStore();
+    const { progress, addCoins, incrementLevel, incrementMatches, playerName } = useUserStore();
 
     const [shelves, setShelves] = useState<Shelf[]>([]);
     const [isGameWon, setIsGameWon] = useState(false);
     const [draggedItem, setDraggedItem] = useState<{ shelfIndex: number; itemIndex: number } | null>(null);
+    const [showSettings, setShowSettings] = useState(false);
 
     const shelfLayoutsRef = useRef<{ y: number; height: number }[]>([]);
     const scrollOffsetRef = useRef(0); // Track scroll position for accurate drop detection
@@ -179,22 +182,20 @@ const GameScreen: React.FC<GameScreenProps> = ({ onNavigateToShop }) => {
     const handleLevelComplete = () => {
         setIsGameWon(true);
 
+        // 💰 Award coins for completing level
+        addCoins(GAME_CONFIG.COINS_PER_MATCH);
+
         // 🎵 Victory sound + haptic
         soundManager.playSound('win');
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    };
 
-        Alert.alert(
-            '🎉 Level Complete!',
-            `You earned ${GAME_CONFIG.COINS_PER_MATCH} coins!\n\nReady for the next challenge?`,
-            [
-                {
-                    text: 'Next Level',
-                    onPress: () => {
-                        incrementLevel();
-                    },
-                },
-            ]
-        );
+    /**
+     * Handle Next Level
+     */
+    const handleNextLevel = () => {
+        incrementLevel();
+        setIsGameWon(false);
     };
 
     /**
@@ -317,6 +318,30 @@ const GameScreen: React.FC<GameScreenProps> = ({ onNavigateToShop }) => {
                     />
                 ))}
             </ScrollView>
+
+            {/* Floating Settings Button */}
+            <TouchableOpacity
+                onPress={() => setShowSettings(true)}
+                style={styles.settingsButton}
+                activeOpacity={0.7}
+            >
+                <Text style={styles.settingsIcon}>⚙️</Text>
+            </TouchableOpacity>
+
+            {/* Settings Modal */}
+            {showSettings && (
+                <SettingsScreen
+                    onClose={() => setShowSettings(false)}
+                    playerName={playerName}
+                />
+            )}
+
+            {/* Level Complete Modal */}
+            <LevelCompleteModal
+                visible={isGameWon}
+                coinsEarned={GAME_CONFIG.COINS_PER_MATCH}
+                onNextLevel={handleNextLevel}
+            />
         </View>
     );
 };
@@ -327,27 +352,49 @@ const styles = StyleSheet.create({
         backgroundColor: '#1A1A2E',
     },
     header: {
-        paddingTop: 40,
-        paddingHorizontal: 16,
-        paddingBottom: 10,
+        paddingTop: 35,
+        paddingHorizontal: 12,
+        paddingBottom: 6,
         backgroundColor: '#16213E',
-        borderBottomLeftRadius: 20,
-        borderBottomRightRadius: 20,
+        borderBottomLeftRadius: 15,
+        borderBottomRightRadius: 15,
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 3 },
-        shadowOpacity: 0.25,
-        shadowRadius: 6,
-        elevation: 6,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+        elevation: 4,
     },
     headerGlow: {
         position: 'absolute',
         top: 0,
         left: 0,
         right: 0,
-        height: 80,
-        backgroundColor: 'rgba(255, 215, 0, 0.1)',
-        borderBottomLeftRadius: 25,
-        borderBottomRightRadius: 25,
+        height: 60,
+        backgroundColor: 'rgba(255, 215, 0, 0.08)',
+        borderBottomLeftRadius: 15,
+        borderBottomRightRadius: 15,
+    },
+    settingsButton: {
+        position: 'absolute',
+        bottom: 30,
+        right: 20,
+        width: 56,
+        height: 56,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#16213E',
+        borderRadius: 28,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+        elevation: 8,
+        borderWidth: 2,
+        borderColor: 'rgba(255, 215, 0, 0.3)',
+        zIndex: 100,
+    },
+    settingsIcon: {
+        fontSize: 24,
     },
     headerContent: {
         flexDirection: 'row',

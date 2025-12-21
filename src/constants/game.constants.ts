@@ -9,11 +9,65 @@ export const GAME_CONFIG = {
     MATCH_COUNT: 3,
     BUFFER_SHELVES: 1,
     COINS_PER_MATCH: 10,
-    COMBO_MULTIPLIER: 2, // 2x coins for quick consecutive matches
-    SPEED_BONUS: 50, // Bonus coins for completing level quickly
+    COMBO_MULTIPLIER: 2,
+    SPEED_BONUS: 50,
     BASE_SHELVES_COUNT: 4,
     SHELVES_INCREASE_RATE: 1,
 } as const;
+
+/**
+ * Progressive Difficulty System
+ * Game gets harder as player advances through levels
+ */
+export const getDifficultyForLevel = (level: number) => {
+    // Level 1-3: Easy (Tutorial)
+    if (level <= 3) {
+        return {
+            numShelves: 4,
+            itemTypes: 3,        // Only 3 types of items
+            itemsPerType: 3,     // Exactly 3 of each (easy to match)
+            description: 'Tutorial',
+        };
+    }
+
+    // Level 4-7: Normal
+    if (level <= 7) {
+        return {
+            numShelves: 5,
+            itemTypes: 4,        // 4 types
+            itemsPerType: 3,
+            description: 'Easy',
+        };
+    }
+
+    // Level 8-12: Getting Harder
+    if (level <= 12) {
+        return {
+            numShelves: 5,
+            itemTypes: 5,        // 5 types
+            itemsPerType: 3,
+            description: 'Medium',
+        };
+    }
+
+    // Level 13-20: Hard
+    if (level <= 20) {
+        return {
+            numShelves: 6,
+            itemTypes: 5,
+            itemsPerType: 4,     // 4 of each (more items)
+            description: 'Hard',
+        };
+    }
+
+    // Level 21+: Expert
+    return {
+        numShelves: 6,
+        itemTypes: 6,            // All 6 item types
+        itemsPerType: 4,
+        description: 'Expert',
+    };
+};
 
 /**
  * Theme colors that change every 5 levels

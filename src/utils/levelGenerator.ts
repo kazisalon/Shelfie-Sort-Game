@@ -1,23 +1,10 @@
 import { GameItem, Shelf, ItemType } from '../types/game.types';
-import { GAME_CONFIG, ITEM_TYPES, ITEM_CONFIGS } from '../constants/game.constants';
+import { GAME_CONFIG, ITEM_TYPES, ITEM_CONFIGS, getDifficultyForLevel } from '../constants/game.constants';
 
 /**
- * Level Generator with Buffer Rule
- * 
- * CRITICAL: This ensures levels are always solvable by leaving buffer space
+ * Level Generator with Progressive Difficulty
+ * Uses the new getDifficultyForLevel system for professional progression
  */
-
-/**
- * Calculate number of shelves based on level
- */
-export const calculateShelvesForLevel = (level: number): number => {
-    const baselineShelves = GAME_CONFIG.BASE_SHELVES_COUNT;
-    const additionalShelves = Math.floor((level - 1) / 3) * GAME_CONFIG.SHELVES_INCREASE_RATE;
-    const totalShelves = baselineShelves + additionalShelves;
-
-    // Cap at 6 shelves to keep everything visible on screen
-    return Math.min(totalShelves, 6);
-};
 
 /**
  * Generate a unique ID for each item instance
@@ -26,59 +13,24 @@ const generateItemId = (): string => {
     return `item_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 };
 
-/**
- * Apply the Buffer Rule to determine how many items to spawn
- * 
- * PROGRESSIVE DIFFICULTY: Buffer reduces as levels increase!
- * - Early levels: 3 empty slots (easy, plenty of room)
- * - Mid levels: 2 empty slots (getting tight)
- * - High levels: 1 empty slot (very challenging!)
- */
-export const calculateItemsToSpawn = (shelfCount: number, level: number): number => {
-    const totalSlots = shelfCount * GAME_CONFIG.ITEMS_PER_SHELF;
-
-    // PROGRESSIVE BUFFER: Reduces as you level up!
-    let bufferSlots: number;
-    if (level <= 3) {
-        bufferSlots = 3; // 3 empty slots (easy)
-    } else if (level <= 7) {
-        bufferSlots = 2; // 2 empty slots (medium)
-    } else {
-        bufferSlots = 1; // 1 empty slot (hard!)
-    }
-
-    const availableSlots = totalSlots - bufferSlots;
-
-    // Each "set" is 3 identical items
-    const numberOfSets = Math.floor(availableSlots / GAME_CONFIG.MATCH_COUNT);
-
-    return numberOfSets * GAME_CONFIG.MATCH_COUNT;
-};
 
 /**
- * Generate a pool of items for the level
- * Items are created in sets of 3 (to ensure they can be matched)
+ * Generate a pool of items for the level based on difficulty
  */
-const generateItemPool = (level: number, shelfCount: number): GameItem[] => {
-    const totalItemsToSpawn = calculateItemsToSpawn(shelfCount, level);
-    const numberOfSets = totalItemsToSpawn / GAME_CONFIG.MATCH_COUNT;
-
-    // IMPROVED: More aggressive item type scaling
-    const itemTypesCount = Math.min(
-        Math.max(2, Math.floor(level * 0.6) + 1), // Increases faster: level 1=2, level 5=4, level 10=7, level 13+=8
-        ITEM_TYPES.length
-    );
-
-    const availableTypes = ITEM_TYPES.slice(0, itemTypesCount);
+const generateItemPool = (level: number): GameItem[] => {
+    const difficulty = getDifficultyForLevel(level);
     const itemPool: GameItem[] = [];
 
-    // Create sets of 3 identical items
-    for (let i = 0; i < numberOfSets; i++) {
-        const itemType = availableTypes[i % availableTypes.length];
+    // Get the specified number of item types for this level
+    const availableTypes = ITEM_TYPES.slice(0, difficulty.itemTypes);
+
+    // Create sets of items based on difficulty
+    // Each type appears 'itemsPerType' times (3 or 4)
+    for (const itemType of availableTypes) {
         const itemConfig = ITEM_CONFIGS[itemType];
 
-        // Create 3 identical items (for matching)
-        for (let j = 0; j < GAME_CONFIG.MATCH_COUNT; j++) {
+        // Create multiple items of this type
+        for (let i = 0; i < difficulty.itemsPerType; i++) {
             itemPool.push({
                 id: generateItemId(),
                 type: itemType,
@@ -163,13 +115,12 @@ const distributeItemsToShelves = (items: GameItem[], shelfCount: number): Shelf[
 
 /**
  * MAIN LEVEL GENERATOR
- * 
- * Generates a solvable level using the Buffer Rule
+ * Uses progressive difficulty system
  */
 export const generateLevel = (level: number): Shelf[] => {
-    const shelfCount = calculateShelvesForLevel(level);
-    const itemPool = generateItemPool(level, shelfCount);
-    const shelves = distributeItemsToShelves(itemPool, shelfCount);
+    const difficulty = getDifficultyForLevel(level);
+    const itemPool = generateItemPool(level);
+    const shelves = distributeItemsToShelves(itemPool, difficulty.numShelves);
 
     return shelves;
 };

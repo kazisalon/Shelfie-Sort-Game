@@ -212,7 +212,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
 
             {/* Premium loading dots */}
             <View style={styles.footer}>
-                <Text style={styles.loading}>Loading</Text>
+                <Text style={styles.loading}>Loading..</Text>
                 <Animated.View style={styles.dotsContainer}>
                     <Animated.Text style={[styles.dot, { opacity: glowOpacity }]}>•</Animated.Text>
                     <Animated.Text style={[styles.dot, { opacity: glowOpacity }]}>•</Animated.Text>

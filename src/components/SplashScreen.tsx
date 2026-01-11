@@ -205,7 +205,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
 
                 {/* Subtitle with shimmer */}
                 <View style={styles.subtitleContainer}>
-                    <Text style={styles.subtitle}>Match & Organize</Text>
+                    <Text style={styles.subtitle}>Match and Organize</Text>
                     <View style={styles.subtitleUnderline} />
                 </View>
             </Animated.View>

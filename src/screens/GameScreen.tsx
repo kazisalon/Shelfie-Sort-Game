@@ -34,11 +34,9 @@ const GameScreen: React.FC<GameScreenProps> = ({ onNavigateToShop }) => {
     const [showSettings, setShowSettings] = useState(false);
 
     const shelfLayoutsRef = useRef<{ y: number; height: number }[]>([]);
-    const scrollOffsetRef = useRef(0); // Track scroll position for accurate drop detection
+    const scrollOffsetRef = useRef(0);
 
-    /**
-     * Initialize Level
-     */
+
     useEffect(() => {
         startNewLevel();
     }, [progress.currentLevel]);

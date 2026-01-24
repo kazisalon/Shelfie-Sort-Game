@@ -25,14 +25,14 @@ const slides: OnboardingSlide[] = [
         title: 'Welcome to Shelfie Sort!',
         description: 'Organize items on shelves and match 3 identical items to clear them. Simple, fun, and addictive!',
         emoji: '🎮',
-        color: '#1A1A2E', // Dark navy - matches game
+        color: '#1A1A2E',
     },
     {
         id: '2',
         title: 'Drag & Drop',
         description: 'Drag items between shelves to organize them. Group 3 identical items together to make them disappear!',
         emoji: '🎯',
-        color: '#16213E', // Purple - matches header
+        color: '#16213E',
     },
     {
         id: '3',

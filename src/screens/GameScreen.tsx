@@ -82,13 +82,11 @@ const GameScreen: React.FC<GameScreenProps> = ({ onNavigateToShop }) => {
                 const itemIndex = fromShelf.items.findIndex(item => item?.id === itemId);
 
                 if (itemIndex === -1) {
-                    console.warn('❌ Item not found:', itemId);
                     return prevShelves;
                 }
 
                 const itemToMove = fromShelf.items[itemIndex];
                 if (!itemToMove || !itemToMove.type) {
-                    console.warn('❌ Invalid item');
                     return prevShelves;
                 }
 

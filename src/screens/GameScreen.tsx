@@ -102,12 +102,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ onNavigateToShop }) => {
                     return prevShelves;
                 }
 
-                // MOVE ITEM (not swap!)
-                console.log('✅ Moving item:', itemToMove.type);
-                console.log('   From items:', fromShelf.items.length, '→', fromShelf.items.length - 1);
-                console.log('   To items:', toShelf.items.length, '→', toShelf.items.length + 1);
 
-                // 1. Remove from source
                 fromShelf.items.splice(itemIndex, 1);
 
                 // 2. Add to target

@@ -53,9 +53,6 @@ const GameScreen: React.FC<GameScreenProps> = ({ onNavigateToShop }) => {
      */
     const handleItemDrop = useCallback(
         (fromShelfIndex: number, itemId: string, toShelfIndex: number) => {
-            console.log('=== DROP ATTEMPT ===');
-            console.log('From shelf:', fromShelfIndex, 'item ID:', itemId);
-            console.log('To shelf:', toShelfIndex);
 
             setShelves((prevShelves) => {
                 // Create deep copy to avoid mutations
@@ -69,12 +66,10 @@ const GameScreen: React.FC<GameScreenProps> = ({ onNavigateToShop }) => {
 
                 // Comprehensive safety checks
                 if (!fromShelf || !toShelf) {
-                    console.warn('Invalid shelf indices');
                     return prevShelves;
                 }
 
                 if (!fromShelf.items || !toShelf.items) {
-                    console.warn('Shelf items array missing');
                     return prevShelves;
                 }
 
@@ -110,8 +105,6 @@ const GameScreen: React.FC<GameScreenProps> = ({ onNavigateToShop }) => {
 
                 // 🎵 Play satisfying drop sound
                 soundManager.playSound('drop');
-
-                console.log('=== DROP SUCCESS ===');
                 return newShelves;
             });
 
@@ -160,8 +153,6 @@ const GameScreen: React.FC<GameScreenProps> = ({ onNavigateToShop }) => {
         // Award coins and increment matches AFTER state update
         if (matchCount > 0) {
             const coinsToAward = GAME_CONFIG.COINS_PER_MATCH * matchCount;
-            console.log(`💰 AWARDING ${coinsToAward} COINS (${matchCount} matches)`);
-
             addCoins(coinsToAward);
             incrementMatches();
         }
@@ -194,7 +185,6 @@ const GameScreen: React.FC<GameScreenProps> = ({ onNavigateToShop }) => {
      */
     const handleShelfLayout = (index: number, y: number, height: number) => {
         shelfLayoutsRef.current[index] = { y, height };
-        console.log(`Shelf ${index} layout:`, { y, height });
     };
 
     /**

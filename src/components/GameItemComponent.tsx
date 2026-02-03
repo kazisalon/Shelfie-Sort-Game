@@ -68,14 +68,6 @@ const GameItemComponent: React.FC<GameItemComponentProps> = ({
                 // Get target shelf
                 const targetShelfIndex = getTargetShelfIndex(finalY);
 
-                console.log('🎯 Item drag ended:', {
-                    from: shelfIndex,
-                    to: targetShelfIndex,
-                    finalY,
-                    startY: startYRef.current,
-                    dy: gestureState.dy
-                });
-
                 // Execute drop FIRST, reset animation AFTER
                 if (targetShelfIndex !== -1 && targetShelfIndex !== shelfIndex) {
                     onDrop(shelfIndex, item.id, targetShelfIndex);

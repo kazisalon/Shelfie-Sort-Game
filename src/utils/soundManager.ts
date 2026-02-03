@@ -32,7 +32,7 @@ class SoundManager {
                 shouldDuckAndroid: true,
             });
         } catch (error) {
-            console.log('Audio init error:', error);
+            // Silent error handling - audio will be disabled if initialization fails
         }
     }
 
@@ -55,13 +55,12 @@ class SoundManager {
                         volume: this.volume,
                     });
                     this.loadedSounds.set(key, sound);
-                    console.log(`✅ Loaded sound: ${key}`);
                 } catch (error) {
-                    console.log(`❌ Failed to load ${key}:`, error);
+                    // Silent error handling - sound will not be available if loading fails
                 }
             }
         } catch (error) {
-            console.log('Sound preload error:', error);
+            // Silent error handling - sounds will be disabled if preload fails
         }
     }
 
@@ -69,10 +68,7 @@ class SoundManager {
      * Play professional game sounds + haptics
      */
     async playSound(type: 'pop' | 'match' | 'drop' | 'win' | 'whoosh') {
-        console.log(`🔊 PLAYING SOUND: ${type}`); // DEBUG
-
         if (this.isMuted) {
-            console.log(`🔇 Sound muted`);
             return;
         }
 
@@ -84,20 +80,13 @@ class SoundManager {
             const sound = this.loadedSounds.get(type);
 
             if (sound) {
-                console.log(`✅ Found sound file for: ${type}`);
                 // Replay from start
                 await sound.setPositionAsync(0);
                 await sound.playAsync();
-                console.log(`🎵 Playing audio: ${type}`);
-            } else {
-                console.log(`⚠️ No sound file loaded for: ${type}`);
-                if (type === 'pop' || type === 'whoosh') {
-                    // For sounds we don't have files for, just use haptics
-                    // You can add pop.mp3 and whoosh.mp3 later if needed
-                }
             }
+            // For sounds we don't have files for (pop, whoosh), just use haptics
         } catch (error) {
-            console.log(`❌ Sound play error (${type}):`, error);
+            // Silent error handling - sound playback fails gracefully
         }
     }
 
@@ -132,7 +121,7 @@ class SoundManager {
                     break;
             }
         } catch (error) {
-            console.log('Haptic error:', error);
+            // Silent error handling - haptics fail gracefully on unsupported devices
         }
     }
 
@@ -155,7 +144,7 @@ class SoundManager {
             try {
                 await sound.setVolumeAsync(this.volume);
             } catch (error) {
-                console.log('Volume update error:', error);
+                // Silent error handling - volume update fails gracefully
             }
         });
     }
@@ -168,7 +157,7 @@ class SoundManager {
             try {
                 await sound.unloadAsync();
             } catch (error) {
-                console.log(`Cleanup error for ${key}:`, error);
+                // Silent error handling - cleanup fails gracefully
             }
         }
         this.loadedSounds.clear();

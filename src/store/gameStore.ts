@@ -31,7 +31,7 @@ const setNumber = async (key: string, value: number): Promise<void> => {
     try {
         await AsyncStorage.setItem(key, value.toString());
     } catch (error) {
-        console.error('Error saving to AsyncStorage:', error);
+        // Silent error handling - storage operation fails gracefully
     }
 };
 
@@ -48,7 +48,7 @@ const setString = async (key: string, value: string): Promise<void> => {
     try {
         await AsyncStorage.setItem(key, value);
     } catch (error) {
-        console.error('Error saving to AsyncStorage:', error);
+        // Silent error handling - storage operation fails gracefully
     }
 };
 
@@ -56,7 +56,7 @@ const removeItem = async (key: string): Promise<void> => {
     try {
         await AsyncStorage.removeItem(key);
     } catch (error) {
-        console.error('Error removing from AsyncStorage:', error);
+        // Silent error handling - storage operation fails gracefully
     }
 };
 
@@ -73,7 +73,7 @@ const setBoolean = async (key: string, value: boolean): Promise<void> => {
     try {
         await AsyncStorage.setItem(key, value ? 'true' : 'false');
     } catch (error) {
-        console.error('Error saving to AsyncStorage:', error);
+        // Silent error handling - storage operation fails gracefully
     }
 };
 

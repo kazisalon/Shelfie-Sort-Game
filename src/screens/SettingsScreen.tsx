@@ -8,6 +8,11 @@ import {
     Linking,
 } from 'react-native';
 
+const SUPPORT_EMAIL = 'support@shelfiesort.com';
+const PRIVACY_POLICY_URL = 'https://shelfiesort.com/privacy';
+const TERMS_URL = 'https://shelfiesort.com/terms';
+const APP_VERSION = '1.0.0';
+
 interface SettingsScreenProps {
     onClose: () => void;
     playerName: string;
@@ -15,17 +20,15 @@ interface SettingsScreenProps {
 
 const SettingsScreen: React.FC<SettingsScreenProps> = ({ onClose, playerName }) => {
     const openPrivacyPolicy = () => {
-        // TODO: Replace with your actual privacy policy URL
-        Linking.openURL('https://yourwebsite.com/privacy');
+        Linking.openURL(PRIVACY_POLICY_URL);
     };
 
     const openTerms = () => {
-        // TODO: Replace with your actual terms URL
-        Linking.openURL('https://yourwebsite.com/terms');
+        Linking.openURL(TERMS_URL);
     };
 
     const sendFeedback = () => {
-        Linking.openURL('mailto:support@shelfiesort.com?subject=Shelfie Sort Feedback');
+        Linking.openURL(`mailto:${SUPPORT_EMAIL}?subject=Shelfie Sort Feedback`);
     };
 
     return (
@@ -54,7 +57,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onClose, playerName }) 
 
                     <View style={styles.card}>
                         <Text style={styles.appTitle}>🎮 SHELFIE SORT</Text>
-                        <Text style={styles.version}>Version 1.0.0</Text>
+                        <Text style={styles.version}>Version {APP_VERSION}</Text>
                         <Text style={styles.aboutText}>
                             A fun and addictive match-3 puzzle game where you organize items on shelves.
                             Match 3 identical items to clear them and progress through challenging levels!
@@ -106,7 +109,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onClose, playerName }) 
 
                     <View style={styles.card}>
                         <Text style={styles.cardTitle}>📧 Contact Us</Text>
-                        <Text style={styles.contactText}>support@shelfiesort.com</Text>
+                        <Text style={styles.contactText}>{SUPPORT_EMAIL}</Text>
                     </View>
                 </View>
 

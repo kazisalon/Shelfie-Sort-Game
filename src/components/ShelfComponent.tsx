@@ -43,7 +43,7 @@ const ShelfComponent: React.FC<ShelfComponentProps> = ({
             <View style={styles.shelf}>
                 {/* Item Slots */}
                 <View style={styles.itemsContainer}>
-                    {shelf?.items?.map((item, originalIndex) => {
+                    {shelf.items.map((item, originalIndex) => {
                         // Skip null/undefined items
                         if (!item || !item.type) {
                             return null;
@@ -61,7 +61,9 @@ const ShelfComponent: React.FC<ShelfComponentProps> = ({
                     })}
 
                     {/* Empty Slots (Visual Indicator) */}
-                    {Array.from({ length: (shelf?.maxCapacity || 3) - (shelf?.items?.filter(i => i).length || 0) }).map((_, index) => (
+                    {Array.from({
+                        length: shelf.maxCapacity - shelf.items.filter(item => !!item).length
+                    }).map((_, index) => (
                         <View key={`empty-${shelfIndex}-${index}`} style={styles.emptySlot} />
                     ))}
                 </View>

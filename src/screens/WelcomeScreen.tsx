@@ -10,29 +10,33 @@ import {
     Alert,
 } from 'react-native';
 
+const MIN_NAME_LENGTH = 2;
+const MAX_NAME_LENGTH = 20;
+const DEFAULT_PLAYER_NAME = 'Player';
+
 interface WelcomeScreenProps {
     onComplete: (name: string) => void;
 }
 
 const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onComplete }) => {
-    const [name, setName] = useState('');
+    const [name, setName] = useState<string>('');
 
     const handleContinue = () => {
         const trimmedName = name.trim();
 
-        if (trimmedName.length < 2) {
+        if (trimmedName.length < MIN_NAME_LENGTH) {
             Alert.alert(
                 'Name Required',
-                'Please enter your name (at least 2 characters)',
+                `Please enter your name (at least ${MIN_NAME_LENGTH} characters)`,
                 [{ text: 'OK' }]
             );
             return;
         }
 
-        if (trimmedName.length > 20) {
+        if (trimmedName.length > MAX_NAME_LENGTH) {
             Alert.alert(
                 'Name Too Long',
-                'Please enter a shorter name (max 20 characters)',
+                `Please enter a shorter name (max ${MAX_NAME_LENGTH} characters)`,
                 [{ text: 'OK' }]
             );
             return;
@@ -70,7 +74,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onComplete }) => {
                             placeholderTextColor="rgba(255, 255, 255, 0.3)"
                             value={name}
                             onChangeText={setName}
-                            maxLength={20}
+                            maxLength={MAX_NAME_LENGTH}
                             autoCapitalize="words"
                             autoCorrect={false}
                             returnKeyType="done"
@@ -99,7 +103,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onComplete }) => {
                 {/* Skip Option */}
                 <TouchableOpacity
                     style={styles.skipButton}
-                    onPress={() => onComplete('Player')}
+                    onPress={() => onComplete(DEFAULT_PLAYER_NAME)}
                 >
                     <Text style={styles.skipText}>Skip for now</Text>
                 </TouchableOpacity>

@@ -54,18 +54,23 @@ interface OnboardingScreenProps {
     onComplete: () => void;
 }
 
-const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
-    const [currentIndex, setCurrentIndex] = useState(0);
-    const scrollX = useRef(new Animated.Value(0)).current;
-    const slidesRef = useRef<FlatList>(null);
+const VIEW_AREA_COVERAGE_THRESHOLD = 50;
 
-    const viewableItemsChanged = useRef(({ viewableItems }: any) => {
-        if (viewableItems && viewableItems.length > 0) {
-            setCurrentIndex(viewableItems[0].index);
+const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
+    const [currentIndex, setCurrentIndex] = useState<number>(0);
+    const scrollX = useRef(new Animated.Value(0)).current;
+    const slidesRef = useRef<FlatList<OnboardingSlide>>(null);
+
+    const viewableItemsChanged = useRef((viewableInfo: { viewableItems: Array<{ index: number | null }> }) => {
+        if (viewableInfo.viewableItems && viewableInfo.viewableItems.length > 0) {
+            const index = viewableInfo.viewableItems[0].index;
+            if (index !== null) {
+                setCurrentIndex(index);
+            }
         }
     }).current;
 
-    const viewConfig = useRef({ viewAreaCoveragePercentThreshold: 50 }).current;
+    const viewConfig = useRef({ viewAreaCoveragePercentThreshold: VIEW_AREA_COVERAGE_THRESHOLD }).current;
 
     const scrollToNext = () => {
         if (currentIndex < slides.length - 1) {

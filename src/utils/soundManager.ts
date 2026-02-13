@@ -1,11 +1,6 @@
 import { Audio } from 'expo-av';
 import * as Haptics from 'expo-haptics';
 
-/**
- * Professional Sound Manager with REAL Audio Files
- * Now playing actual MP3 sounds!
- */
-
 class SoundManager {
     private static instance: SoundManager;
     private isMuted: boolean = false;
@@ -64,9 +59,6 @@ class SoundManager {
         }
     }
 
-    /**
-     * Play professional game sounds + haptics
-     */
     async playSound(type: 'pop' | 'match' | 'drop' | 'win' | 'whoosh') {
         if (this.isMuted) {
             return;
@@ -90,9 +82,6 @@ class SoundManager {
         }
     }
 
-    /**
-     * Professional haptic feedback patterns
-     */
     private playHaptic(type: string) {
         try {
             switch (type) {

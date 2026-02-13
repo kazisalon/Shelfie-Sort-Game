@@ -14,21 +14,17 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
     const glowAnim = useRef(new Animated.Value(0)).current;
     const shimmerAnim = useRef(new Animated.Value(-width)).current;
 
-    // Individual item animations
     const item1Scale = useRef(new Animated.Value(0)).current;
     const item2Scale = useRef(new Animated.Value(0)).current;
     const item3Scale = useRef(new Animated.Value(0)).current;
 
     useEffect(() => {
-        // Complex staggered animation sequence
         Animated.sequence([
-            // Fade in background
             Animated.timing(fadeAnim, {
                 toValue: 1,
                 duration: 400,
                 useNativeDriver: true,
             }),
-            // Title and shelf appear
             Animated.parallel([
                 Animated.spring(scaleAnim, {
                     toValue: 1,
@@ -43,7 +39,6 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
                     useNativeDriver: true,
                 }),
             ]),
-            // Items pop in one by one
             Animated.stagger(100, [
                 Animated.spring(item1Scale, {
                     toValue: 1,
@@ -66,7 +61,6 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
             ]),
         ]).start();
 
-        // Continuous glow pulse
         Animated.loop(
             Animated.sequence([
                 Animated.timing(glowAnim, {
@@ -82,7 +76,6 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
             ])
         ).start();
 
-        // Shimmer effect
         Animated.loop(
             Animated.timing(shimmerAnim, {
                 toValue: width * 2,
@@ -91,7 +84,6 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
             })
         ).start();
 
-        // Auto-hide after 3 seconds
         const timer = setTimeout(() => {
             Animated.timing(fadeAnim, {
                 toValue: 0,
@@ -112,12 +104,10 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
 
     return (
         <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
-            {/* Gradient Background Layers */}
             <View style={styles.gradientTop} />
             <View style={styles.gradientMiddle} />
             <View style={styles.gradientBottom} />
 
-            {/* Shimmer overlay */}
             <Animated.View
                 style={[
                     styles.shimmer,
@@ -127,7 +117,6 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
                 ]}
             />
 
-            {/* Main Content with Glow */}
             <Animated.View
                 style={[
                     styles.content,
@@ -136,7 +125,6 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
                     },
                 ]}
             >
-                {/* Glow effect behind title */}
                 <Animated.View
                     style={[
                         styles.titleGlow,
@@ -144,13 +132,11 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
                     ]}
                 />
 
-                {/* Title */}
                 <View style={styles.titleContainer}>
                     <Text style={styles.title}>SHELFIE</Text>
                     <Text style={[styles.title, styles.titleAccent]}>SORT</Text>
                 </View>
 
-                {/* Premium Shelf with Items */}
                 <Animated.View
                     style={[
                         styles.shelfContainer,
@@ -159,7 +145,6 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
                         },
                     ]}
                 >
-                    {/* Shelf glow */}
                     <Animated.View
                         style={[
                             styles.shelfGlow,
@@ -168,7 +153,6 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
                     />
 
                     <View style={styles.shelf}>
-                        {/* Item 1 */}
                         <Animated.View
                             style={[
                                 styles.item,
@@ -179,7 +163,6 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
                             <View style={styles.itemShine} />
                         </Animated.View>
 
-                        {/* Item 2 */}
                         <Animated.View
                             style={[
                                 styles.item,
@@ -190,7 +173,6 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
                             <View style={styles.itemShine} />
                         </Animated.View>
 
-                        {/* Item 3 */}
                         <Animated.View
                             style={[
                                 styles.item,
@@ -203,14 +185,12 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
                     </View>
                 </Animated.View>
 
-                {/* Subtitle with shimmer */}
                 <View style={styles.subtitleContainer}>
                     <Text style={styles.subtitle}>Match and Organize</Text>
                     <View style={styles.subtitleUnderline} />
                 </View>
             </Animated.View>
 
-            {/* Premium loading dots */}
             <View style={styles.footer}>
                 <Text style={styles.loading}>Loading..</Text>
                 <Animated.View style={styles.dotsContainer}>

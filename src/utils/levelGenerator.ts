@@ -2,11 +2,6 @@ import { GameItem, Shelf, ItemType } from '../types/game.types';
 import { GAME_CONFIG, ITEM_TYPES, ITEM_CONFIGS, getDifficultyForLevel } from '../constants/game.constants';
 
 /**
- * Level Generator with Progressive Difficulty
- * Uses the new getDifficultyForLevel system for professional progression
- */
-
-/**
  * Generate a unique ID for each item instance
  */
 const generateItemId = (): string => {
@@ -113,10 +108,6 @@ const distributeItemsToShelves = (items: GameItem[], shelfCount: number): Shelf[
     return shelves;
 };
 
-/**
- * MAIN LEVEL GENERATOR
- * Uses progressive difficulty system
- */
 export const generateLevel = (level: number): Shelf[] => {
     const difficulty = getDifficultyForLevel(level);
     const itemPool = generateItemPool(level);

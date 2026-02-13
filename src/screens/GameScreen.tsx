@@ -49,7 +49,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ onNavigateToShop }) => {
     };
 
     /**
-     * Handle Item Drop - Production Ready
+     * Handle Item Drop
      */
     const handleItemDrop = useCallback(
         (fromShelfIndex: number, itemId: string, toShelfIndex: number) => {
@@ -164,10 +164,10 @@ const GameScreen: React.FC<GameScreenProps> = ({ onNavigateToShop }) => {
     const handleLevelComplete = () => {
         setIsGameWon(true);
 
-        // 💰 Award coins for completing level
+        // Award coins for completing level
         addCoins(GAME_CONFIG.COINS_PER_MATCH);
 
-        // 🎵 Victory sound + haptic
+        // Victory sound + haptic
         soundManager.playSound('win');
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     };
@@ -227,7 +227,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ onNavigateToShop }) => {
         return nearestIndex;
     };
 
-    // 🎨 DYNAMIC THEME - Changes every 5 levels!
+    // Dynamic theme - Changes every 5 levels
     const themeIndex = Math.min(Math.floor((progress.currentLevel - 1) / 5), LEVEL_THEMES.length - 1);
     const currentTheme = LEVEL_THEMES[themeIndex];
 
@@ -496,15 +496,6 @@ const styles = StyleSheet.create({
     gameBoard: {
         padding: LAYOUT.CONTAINER_PADDING,
         paddingBottom: 40,
-    },
-    debugInfo: {
-        padding: 10,
-        backgroundColor: '#16213E',
-        alignItems: 'center',
-    },
-    debugText: {
-        color: '#FFFFFF',
-        fontSize: 12,
     },
 });
 

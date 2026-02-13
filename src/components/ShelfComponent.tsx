@@ -41,7 +41,6 @@ const ShelfComponent: React.FC<ShelfComponentProps> = ({
             onLayout={handleLayout}
         >
             <View style={styles.shelf}>
-                {/* Item Slots */}
                 <View style={styles.itemsContainer}>
                     {shelf.items.map((item, originalIndex) => {
                         // Skip null/undefined items
@@ -59,8 +58,6 @@ const ShelfComponent: React.FC<ShelfComponentProps> = ({
                             />
                         );
                     })}
-
-                    {/* Empty Slots (Visual Indicator) */}
                     {Array.from({
                         length: shelf.maxCapacity - shelf.items.filter(item => !!item).length
                     }).map((_, index) => (
@@ -82,13 +79,11 @@ const styles = StyleSheet.create({
         padding: 12,
         minHeight: LAYOUT.SHELF_HEIGHT,
         justifyContent: 'center',
-        // Premium 3D shadow
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 6 },
         shadowOpacity: 0.45,
         shadowRadius: 10,
         elevation: 12,
-        // Border for 3D depth
         borderWidth: 3,
         borderColor: '#8B4513',
         borderBottomWidth: 5,

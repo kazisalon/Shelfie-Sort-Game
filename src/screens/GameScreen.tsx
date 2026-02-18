@@ -48,9 +48,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ onNavigateToShop }) => {
         setDraggedItem(null);
     };
 
-    /**
-     * Handle Item Drop
-     */
+ 
     const handleItemDrop = useCallback(
         (fromShelfIndex: number, itemId: string, toShelfIndex: number) => {
 
@@ -85,7 +83,6 @@ const GameScreen: React.FC<GameScreenProps> = ({ onNavigateToShop }) => {
                     return prevShelves;
                 }
 
-                // Check if it's the same shelf (reorder)
                 if (fromShelfIndex === toShelfIndex) {
                     // Don't do anything for same-shelf drops
                     return prevShelves;
@@ -108,7 +105,6 @@ const GameScreen: React.FC<GameScreenProps> = ({ onNavigateToShop }) => {
                 return newShelves;
             });
 
-            // Check for matches after state update
             setTimeout(() => {
                 checkForMatches();
             }, 150);
@@ -116,9 +112,6 @@ const GameScreen: React.FC<GameScreenProps> = ({ onNavigateToShop }) => {
         []
     );
 
-    /**
-     * Check all shelves for matches
-     */
     const checkForMatches = useCallback(() => {
         let matchCount = 0;
 

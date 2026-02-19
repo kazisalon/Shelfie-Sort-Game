@@ -10,6 +10,7 @@ import {
     Alert,
     Dimensions,
 } from 'react-native';
+import * as Haptics from 'expo-haptics';
 import Animated, {
     FadeInDown,
     FadeInUp,
@@ -31,43 +32,53 @@ interface WelcomeScreenProps {
     onComplete: (name: string) => void;
 }
 
-const BackgroundParticle = ({ delay = 0, size = 100, x = 0, y = 0 }) => {
+const PARTICLE_COLORS = ['#FFD700', '#C0C0C0', '#FDF5E6', '#FFDF00'];
+
+const BackgroundParticle = ({ delay = 0, size = 100, x = 0, y = 0, color = '#FFD700' }) => {
     const translateY = useSharedValue(y);
     const translateX = useSharedValue(x);
+    const rotation = useSharedValue(0);
     const opacity = useSharedValue(0.1);
 
     useEffect(() => {
         translateY.value = withRepeat(
             withSequence(
-                withTiming(y - 50, { duration: 4000 + Math.random() * 2000 }),
-                withTiming(y + 50, { duration: 4000 + Math.random() * 2000 })
+                withTiming(y - 80, { duration: 5000 + Math.random() * 3000 }),
+                withTiming(y + 80, { duration: 5000 + Math.random() * 3000 })
             ),
             -1,
             true
         );
         translateX.value = withRepeat(
             withSequence(
-                withTiming(x + 30, { duration: 3000 + Math.random() * 2000 }),
-                withTiming(x - 30, { duration: 3000 + Math.random() * 2000 })
+                withTiming(x + 40, { duration: 4000 + Math.random() * 3000 }),
+                withTiming(x - 40, { duration: 4000 + Math.random() * 3000 })
             ),
             -1,
             true
+        );
+        rotation.value = withRepeat(
+            withTiming(360, { duration: 10000 + Math.random() * 5000 }),
+            -1,
+            false
         );
     }, []);
 
     const animatedStyle = useAnimatedStyle(() => ({
         transform: [
             { translateY: translateY.value },
-            { translateX: translateX.value }
+            { translateX: translateX.value },
+            { rotate: `${rotation.value}deg` }
         ],
         opacity: opacity.value,
+        backgroundColor: color,
     }));
 
     return (
         <Animated.View
             style={[
                 styles.particle,
-                { width: size, height: size, borderRadius: size / 2 },
+                { width: size, height: size, borderRadius: size / 4 }, // Rectangular rounded particles
                 animatedStyle
             ]}
         />
@@ -76,8 +87,10 @@ const BackgroundParticle = ({ delay = 0, size = 100, x = 0, y = 0 }) => {
 
 const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onComplete }) => {
     const [name, setName] = useState<string>('');
+    const [isInputFocused, setIsInputFocused] = useState(false);
     const emojiRotation = useSharedValue(0);
     const buttonScale = useSharedValue(1);
+    const nameGlow = useSharedValue(0);
 
     useEffect(() => {
         // Waving emoji animation
@@ -93,8 +106,18 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onComplete }) => {
         // Button pulsing animation
         buttonScale.value = withRepeat(
             withSequence(
-                withTiming(1.05, { duration: 800 }),
-                withTiming(1, { duration: 800 })
+                withTiming(1.04, { duration: 1000 }),
+                withTiming(1, { duration: 1000 })
+            ),
+            -1,
+            true
+        );
+
+        // Name glow animation
+        nameGlow.value = withRepeat(
+            withSequence(
+                withTiming(1, { duration: 1500 }),
+                withTiming(0, { duration: 1500 })
             ),
             -1,
             true
@@ -105,6 +128,11 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onComplete }) => {
         transform: [{ rotate: `${emojiRotation.value}deg` }],
     }));
 
+    const nameGlowStyle = useAnimatedStyle(() => ({
+        textShadowRadius: 10 + (nameGlow.value * 10),
+        opacity: 0.8 + (nameGlow.value * 0.2),
+    }));
+
     const buttonAnimatedStyle = useAnimatedStyle(() => ({
         transform: [{ scale: name.trim() ? buttonScale.value : 1 }],
     }));
@@ -113,6 +141,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onComplete }) => {
         const trimmedName = name.trim();
 
         if (trimmedName.length < MIN_NAME_LENGTH) {
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
             Alert.alert(
                 'Name Required',
                 `Please enter your name (at least ${MIN_NAME_LENGTH} characters)`,
@@ -122,6 +151,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onComplete }) => {
         }
 
         if (trimmedName.length > MAX_NAME_LENGTH) {
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
             Alert.alert(
                 'Name Too Long',
                 `Please enter a shorter name (max ${MAX_NAME_LENGTH} characters)`,
@@ -130,15 +160,22 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onComplete }) => {
             return;
         }
 
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
         onComplete(trimmedName);
+    };
+
+    const handleSkip = () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        onComplete(DEFAULT_PLAYER_NAME);
     };
 
     return (
         <View style={styles.container}>
             {/* Background Decorations */}
-            <BackgroundParticle size={200} x={-50} y={100} />
-            <BackgroundParticle size={150} x={SCREEN_WIDTH - 100} y={SCREEN_HEIGHT / 2} />
-            <BackgroundParticle size={100} x={50} y={SCREEN_HEIGHT - 200} />
+            <BackgroundParticle size={200} x={-50} y={100} color={PARTICLE_COLORS[0]} />
+            <BackgroundParticle size={150} x={SCREEN_WIDTH - 100} y={SCREEN_HEIGHT / 2} color={PARTICLE_COLORS[1]} />
+            <BackgroundParticle size={120} x={100} y={SCREEN_HEIGHT / 4} color={PARTICLE_COLORS[2]} />
+            <BackgroundParticle size={100} x={50} y={SCREEN_HEIGHT - 200} color={PARTICLE_COLORS[3]} />
 
             <KeyboardAvoidingView
                 style={styles.keyboardView}
@@ -147,14 +184,14 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onComplete }) => {
                 <View style={styles.content}>
                     {/* Welcome Header */}
                     <Animated.View
-                        entering={FadeInDown.delay(200).duration(800)}
+                        entering={FadeInDown.delay(200).duration(1000).springify()}
                         style={styles.header}
                     >
                         <View style={styles.emojiContainer}>
                             <Animated.Text style={[styles.emoji, wavingStyle]}>👋</Animated.Text>
                         </View>
                         <Text style={styles.welcomeText}>Welcome to</Text>
-                        <Text style={styles.appName}>SHELFIE SORT</Text>
+                        <Animated.Text style={[styles.appName, nameGlowStyle]}>SHELFIE SORT</Animated.Text>
                         <View style={styles.subtitleContainer}>
                             <Text style={styles.subtitle}>Match & Organize</Text>
                         </View>
@@ -167,18 +204,28 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onComplete }) => {
                     >
                         <Text style={styles.label}>What should we call you?</Text>
 
-                        <View style={styles.inputWrapper}>
+                        <View style={[
+                            styles.inputWrapper,
+                            isInputFocused && styles.inputWrapperFocused
+                        ]}>
                             <TextInput
                                 style={styles.input}
                                 placeholder="Enter your name"
                                 placeholderTextColor="rgba(255, 255, 255, 0.3)"
                                 value={name}
-                                onChangeText={setName}
+                                onChangeText={(text) => {
+                                    setName(text);
+                                    if (text.length > 0 && text.length % 5 === 0) {
+                                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                                    }
+                                }}
                                 maxLength={MAX_NAME_LENGTH}
                                 autoCapitalize="words"
                                 autoCorrect={false}
                                 returnKeyType="done"
                                 onSubmitEditing={handleContinue}
+                                onFocus={() => setIsInputFocused(true)}
+                                onBlur={() => setIsInputFocused(false)}
                             />
                         </View>
 
@@ -206,10 +253,10 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onComplete }) => {
                     </Animated.View>
 
                     {/* Skip Option */}
-                    <Animated.View entering={FadeInUp.delay(800).duration(800)}>
+                    <Animated.View entering={FadeInUp.delay(800).duration(1000)}>
                         <TouchableOpacity
                             style={styles.skipButton}
-                            onPress={() => onComplete(DEFAULT_PLAYER_NAME)}
+                            onPress={handleSkip}
                         >
                             <Text style={styles.skipText}>Skip for now</Text>
                         </TouchableOpacity>
@@ -304,11 +351,20 @@ const styles = StyleSheet.create({
         fontWeight: '600',
     },
     inputWrapper: {
-        backgroundColor: 'rgba(255, 255, 255, 0.1)',
-        borderRadius: 15,
+        backgroundColor: 'rgba(255, 255, 255, 0.08)',
+        borderRadius: 20,
         borderWidth: 2,
-        borderColor: 'rgba(255, 215, 0, 0.3)',
+        borderColor: 'rgba(255, 215, 0, 0.2)',
         overflow: 'hidden',
+    },
+    inputWrapperFocused: {
+        borderColor: '#FFD700',
+        backgroundColor: 'rgba(255, 215, 0, 0.05)',
+        shadowColor: '#FFD700',
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.3,
+        shadowRadius: 10,
+        elevation: 5,
     },
     input: {
         paddingHorizontal: 20,

@@ -262,6 +262,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onComplete }) => {
                         </TouchableOpacity>
                     </Animated.View>
                 </View>
+                <Text style={{ position: 'absolute', bottom: 20, alignSelf: 'center', color: 'rgba(255,255,255,0.2)', fontSize: 10 }}>v1.0.2</Text>
             </KeyboardAvoidingView>
         </View>
     );

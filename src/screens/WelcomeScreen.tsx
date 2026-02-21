@@ -263,6 +263,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onComplete }) => {
                     </Animated.View>
                 </View>
                 <Text style={{ position: 'absolute', bottom: 20, alignSelf: 'center', color: 'rgba(255,255,255,0.2)', fontSize: 10 }}>v1.0.2</Text>
+                <Text style={{ position: 'absolute', bottom: 6, alignSelf: 'center', color: 'rgba(255,255,255,0.1)', fontSize: 8, letterSpacing: 1 }}>KAZISALON GAMES</Text>
             </KeyboardAvoidingView>
         </View>
     );

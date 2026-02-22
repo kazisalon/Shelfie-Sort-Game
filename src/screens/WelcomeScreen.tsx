@@ -195,6 +195,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onComplete }) => {
                         <View style={styles.subtitleContainer}>
                             <Text style={styles.subtitle}>Match & Organize</Text>
                         </View>
+                        <Text style={styles.tagline}>Ready to test your organization skills?</Text>
                     </Animated.View>
 
                     {/* Name Input Section */}
@@ -341,6 +342,13 @@ const styles = StyleSheet.create({
         color: '#FFD700',
         fontWeight: '600',
         letterSpacing: 2,
+    },
+    tagline: {
+        fontSize: 14,
+        color: 'rgba(255, 255, 255, 0.5)',
+        marginTop: 15,
+        fontStyle: 'italic',
+        textAlign: 'center',
     },
     inputSection: {
         marginBottom: 40,

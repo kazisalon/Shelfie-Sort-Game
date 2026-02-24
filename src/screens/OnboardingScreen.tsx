@@ -161,6 +161,12 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
                     >
                         {item.description}
                     </Animated.Text>
+                    <Animated.Text
+                        entering={FadeInUp.delay(700).duration(800)}
+                        style={styles.tagline}
+                    >
+                        {index === slides.length - 1 ? "You're all set to go!" : "Swipe to learn more →"}
+                    </Animated.Text>
                 </View>
             </View>
         );
@@ -304,6 +310,14 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         lineHeight: 28,
         maxWidth: 300,
+    },
+    tagline: {
+        fontSize: 14,
+        color: 'rgba(255, 215, 0, 0.6)',
+        marginTop: 25,
+        fontStyle: 'italic',
+        fontWeight: '500',
+        letterSpacing: 1,
     },
     pagination: {
         flexDirection: 'row',

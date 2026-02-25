@@ -227,6 +227,7 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
                 showsHorizontalScrollIndicator={false}
             />
 
+            <Text style={styles.stepCounter}>{`Step ${currentIndex + 1} of ${slides.length}`}</Text>
             <Pagination />
 
             {/* Navigation Buttons */}
@@ -318,6 +319,15 @@ const styles = StyleSheet.create({
         fontStyle: 'italic',
         fontWeight: '500',
         letterSpacing: 1,
+    },
+    stepCounter: {
+        position: 'absolute',
+        bottom: 165,
+        alignSelf: 'center',
+        color: 'rgba(255, 255, 255, 0.35)',
+        fontSize: 12,
+        letterSpacing: 1.5,
+        zIndex: 2,
     },
     pagination: {
         flexDirection: 'row',

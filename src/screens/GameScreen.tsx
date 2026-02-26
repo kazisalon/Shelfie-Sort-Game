@@ -53,7 +53,6 @@ const GameScreen: React.FC<GameScreenProps> = ({ onNavigateToShop }) => {
         (fromShelfIndex: number, itemId: string, toShelfIndex: number) => {
 
             setShelves((prevShelves) => {
-                // Create deep copy to avoid mutations
                 const newShelves = prevShelves.map(shelf => ({
                     ...shelf,
                     items: [...shelf.items]
@@ -71,7 +70,6 @@ const GameScreen: React.FC<GameScreenProps> = ({ onNavigateToShop }) => {
                     return prevShelves;
                 }
 
-                // FIND ITEM BY ID (fixes stale index!)
                 const itemIndex = fromShelf.items.findIndex(item => item?.id === itemId);
 
                 if (itemIndex === -1) {
@@ -84,11 +82,9 @@ const GameScreen: React.FC<GameScreenProps> = ({ onNavigateToShop }) => {
                 }
 
                 if (fromShelfIndex === toShelfIndex) {
-                    // Don't do anything for same-shelf drops
                     return prevShelves;
                 }
 
-                // Check if target shelf has space
                 if (toShelf.items.length >= GAME_CONFIG.ITEMS_PER_SHELF) {
                     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
                     return prevShelves;

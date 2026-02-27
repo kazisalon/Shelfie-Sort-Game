@@ -93,7 +93,6 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onComplete }) => {
     const nameGlow = useSharedValue(0);
 
     useEffect(() => {
-        // Waving emoji animation
         emojiRotation.value = withRepeat(
             withSequence(
                 withTiming(-15, { duration: 400 }),
@@ -103,7 +102,6 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onComplete }) => {
             true
         );
 
-        // Button pulsing animation
         buttonScale.value = withRepeat(
             withSequence(
                 withTiming(1.04, { duration: 1000 }),

@@ -111,7 +111,6 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onComplete }) => {
             true
         );
 
-        // Name glow animation
         nameGlow.value = withRepeat(
             withSequence(
                 withTiming(1, { duration: 1500 }),
@@ -169,7 +168,6 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onComplete }) => {
 
     return (
         <View style={styles.container}>
-            {/* Background Decorations */}
             <BackgroundParticle size={200} x={-50} y={100} color={PARTICLE_COLORS[0]} />
             <BackgroundParticle size={150} x={SCREEN_WIDTH - 100} y={SCREEN_HEIGHT / 2} color={PARTICLE_COLORS[1]} />
             <BackgroundParticle size={120} x={100} y={SCREEN_HEIGHT / 4} color={PARTICLE_COLORS[2]} />

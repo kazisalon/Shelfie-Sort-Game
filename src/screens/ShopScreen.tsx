@@ -84,7 +84,10 @@ const ShopScreen: React.FC<ShopScreenProps> = ({ onNavigateBack }) => {
                 <TouchableOpacity onPress={onNavigateBack} style={styles.backButton}>
                     <Text style={styles.backButtonText}>← Back</Text>
                 </TouchableOpacity>
-                <Text style={styles.title}>Decoration Shop</Text>
+                <View style={styles.titleContainer}>
+                    <Text style={styles.title}>Decoration Shop</Text>
+                    <Text style={styles.subtitle}>Unlock items to personalize your game!</Text>
+                </View>
                 <View style={styles.coinDisplay}>
                     <Text style={styles.coinText}>💰 {progress.coins}</Text>
                 </View>
@@ -125,10 +128,19 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '600',
     },
+    titleContainer: {
+        flex: 1,
+        alignItems: 'center',
+    },
     title: {
-        fontSize: 24,
+        fontSize: 22,
         fontWeight: 'bold',
         color: '#FFFFFF',
+    },
+    subtitle: {
+        fontSize: 12,
+        color: 'rgba(255, 255, 255, 0.5)',
+        marginTop: 4,
     },
     coinDisplay: {
         backgroundColor: '#FFD700',

@@ -48,7 +48,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ onNavigateToShop }) => {
         setDraggedItem(null);
     };
 
- 
+
     const handleItemDrop = useCallback(
         (fromShelfIndex: number, itemId: string, toShelfIndex: number) => {
 
@@ -235,6 +235,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ onNavigateToShop }) => {
                             <Text style={styles.levelNumber}>{progress.currentLevel}</Text>
                         </View>
                         <Text style={styles.themeName}>{currentTheme.name}</Text>
+                        <Text style={styles.tagline}>Match and organize your way to victory!</Text>
                     </View>
 
                     {/* Right side - Coins */}
@@ -408,6 +409,11 @@ const styles = StyleSheet.create({
         color: 'rgba(255, 255, 255, 0.5)',
         marginTop: 1,
         fontStyle: 'italic',
+    },
+    tagline: {
+        fontSize: 8,
+        color: 'rgba(255, 215, 0, 0.4)',
+        marginTop: 2,
     },
     coinContainer: {
         flexDirection: 'row',

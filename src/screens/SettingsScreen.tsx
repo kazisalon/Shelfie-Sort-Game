@@ -39,6 +39,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onClose, playerName }) 
                     <Text style={styles.closeText}>✕</Text>
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>Settings</Text>
+                <Text style={styles.headerSubtitle}>Customize your experience</Text>
             </View>
 
             <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
@@ -172,6 +173,12 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#FFFFFF',
         textAlign: 'center',
+    },
+    headerSubtitle: {
+        fontSize: 12,
+        color: 'rgba(255, 255, 255, 0.5)',
+        textAlign: 'center',
+        marginTop: 4,
     },
     content: {
         flex: 1,

@@ -7,6 +7,7 @@ import {
     ScrollView,
     Linking,
 } from 'react-native';
+import { useUserStore } from '../store/gameStore';
 
 const SUPPORT_EMAIL = 'support@shelfiesort.com';
 const PRIVACY_POLICY_URL = 'https://shelfiesort.com/privacy';
@@ -19,6 +20,8 @@ interface SettingsScreenProps {
 }
 
 const SettingsScreen: React.FC<SettingsScreenProps> = ({ onClose, playerName }) => {
+    const { progress } = useUserStore();
+
     const openPrivacyPolicy = () => {
         Linking.openURL(PRIVACY_POLICY_URL);
     };
@@ -52,7 +55,27 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onClose, playerName }) 
                     </View>
                 </View>
 
-                {/* About Section */}
+                {/* Quick Stats */}
+                <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>Quick Stats</Text>
+                    <View style={styles.statsGrid}>
+                        <View style={styles.statItem}>
+                            <Text style={styles.statValue}>{progress.currentLevel}</Text>
+                            <Text style={styles.statLabel}>Current Level</Text>
+                        </View>
+                        <View style={styles.statDivider} />
+                        <View style={styles.statItem}>
+                            <Text style={styles.statValue}>{progress.totalMatches}</Text>
+                            <Text style={styles.statLabel}>Total Matches</Text>
+                        </View>
+                        <View style={styles.statDivider} />
+                        <View style={styles.statItem}>
+                            <Text style={styles.statValue}>{progress.coins}</Text>
+                            <Text style={styles.statLabel}>Coins</Text>
+                        </View>
+                    </View>
+                </View>
+
                 <View style={styles.section}>
                     <Text style={styles.sectionTitle}>About</Text>
 
@@ -283,6 +306,34 @@ const styles = StyleSheet.create({
         color: 'rgba(255, 255, 255, 0.4)',
         marginBottom: 5,
         textAlign: 'center',
+    },
+    statsGrid: {
+        flexDirection: 'row',
+        backgroundColor: 'rgba(255, 255, 255, 0.05)',
+        borderRadius: 15,
+        borderWidth: 1,
+        borderColor: 'rgba(255, 255, 255, 0.1)',
+        overflow: 'hidden',
+    },
+    statItem: {
+        flex: 1,
+        paddingVertical: 18,
+        alignItems: 'center',
+    },
+    statValue: {
+        fontSize: 26,
+        fontWeight: 'bold',
+        color: '#FFD700',
+        marginBottom: 4,
+    },
+    statLabel: {
+        fontSize: 11,
+        color: 'rgba(255, 255, 255, 0.5)',
+        textAlign: 'center',
+    },
+    statDivider: {
+        width: 1,
+        backgroundColor: 'rgba(255, 255, 255, 0.1)',
     },
 });
 

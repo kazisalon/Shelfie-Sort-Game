@@ -145,6 +145,9 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onClose, playerName }) 
                     <Text style={styles.copyright}>
                         Made with passion for puzzle lovers 🎯
                     </Text>
+                    <Text style={styles.motivationalLine}>
+                        Keep sorting and stay sharp! 🚀
+                    </Text>
                 </View>
             </ScrollView>
         </View>
@@ -306,6 +309,15 @@ const styles = StyleSheet.create({
         color: 'rgba(255, 255, 255, 0.4)',
         marginBottom: 5,
         textAlign: 'center',
+    },
+    motivationalLine: {
+        fontSize: 14,
+        color: '#FFD700',
+        fontWeight: '600',
+        marginTop: 15,
+        textAlign: 'center',
+        fontStyle: 'italic',
+        opacity: 0.8,
     },
     statsGrid: {
         flexDirection: 'row',

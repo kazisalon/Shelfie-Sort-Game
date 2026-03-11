@@ -188,6 +188,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
                 <View style={styles.subtitleContainer}>
                     <Text style={styles.subtitle}>Match and Organize</Text>
                     <View style={styles.subtitleUnderline} />
+                    <Text style={styles.tagline}>Get ready sorting master!</Text>
                 </View>
             </Animated.View>
 
@@ -362,6 +363,13 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 0 },
         shadowOpacity: 0.8,
         shadowRadius: 4,
+    },
+    tagline: {
+        fontSize: 12,
+        color: 'rgba(255, 255, 255, 0.6)',
+        marginTop: 12,
+        fontStyle: 'italic',
+        letterSpacing: 1,
     },
     footer: {
         position: 'absolute',

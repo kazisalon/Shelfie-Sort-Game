@@ -37,6 +37,7 @@ const LevelCompleteModal: React.FC<LevelCompleteModalProps> = ({
 
                     {/* Title */}
                     <Text style={styles.title}>Level Complete!</Text>
+                    <Text style={styles.subtitle}>You're one step closer to mastery!</Text>
 
                     {/* Coins Display */}
                     <View style={styles.coinsContainer}>
@@ -116,9 +117,17 @@ const styles = StyleSheet.create({
         fontSize: 30,
         fontWeight: 'bold',
         color: '#FFFFFF',
-        marginBottom: 20,
+        marginBottom: 5,
         textAlign: 'center',
         letterSpacing: 1,
+    },
+    subtitle: {
+        fontSize: 14,
+        color: 'rgba(255, 215, 0, 0.8)',
+        marginBottom: 20,
+        textAlign: 'center',
+        fontStyle: 'italic',
+        letterSpacing: 0.5,
     },
     coinsContainer: {
         flexDirection: 'row',
